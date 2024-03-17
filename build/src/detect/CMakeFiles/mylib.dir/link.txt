@@ -1,0 +1,2 @@
+/usr/bin/ar qc libmylib.a CMakeFiles/mylib.dir/src/AdjustNumber.cpp.o CMakeFiles/mylib.dir/src/BoardBox.cpp.o CMakeFiles/mylib.dir/src/ImageInformation.cpp.o CMakeFiles/mylib.dir/src/ImageTrackle.cpp.o CMakeFiles/mylib.dir/src/Match.cpp.o CMakeFiles/mylib.dir/src/RBox.cpp.o
+/usr/bin/ranlib libmylib.a
