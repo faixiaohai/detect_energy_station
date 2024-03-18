@@ -33,7 +33,7 @@ void Match::MatchRBox(const cv::Mat &image) {
         image_center.x = image.size().width / 2;
         image_center.y = image.size().height / 2;
         std::cout << "image center = " << image_center << std::endl;
-        std::cout << "dont founded rbox in last image,please move video" << std::endl;
+        std:    // std::cout << my_adjust.informations.in_r << std::endl;:cout << "dont founded rbox in last image,please move video" << std::endl;
         std::vector<float> distances;
         for (int i = 0; i < now_image.pre_rbox.size(); i++) {
             float distance = std::sqrt(abs(image_center.x - now_image.pre_rbox[i].center.x) * abs(image_center.x - now_image.pre_rbox[i].center.x) + abs(image_center.y -now_image.pre_rbox[i].center.y) * abs(image_center.y -now_image.pre_rbox[i].center.y));
@@ -42,7 +42,8 @@ void Match::MatchRBox(const cv::Mat &image) {
         auto min = std::min_element(distances.begin(), distances.end());
         if (min != distances.end()) {
             int index = std::distance(distances.begin(), min);
-            now_image.rel_box = now_image.pre_rbox[index]; 
+            now_image.rel_box = now_image.pre_rbox[index];
+            std::cout << "founed rbox in now image" << std::endl;
         }
     }
     iou_arry.clear();
@@ -144,14 +145,14 @@ BoardBox Match::GetPrepareBox(const cv::Point2f &roate_center, const float &rota
     vertices.clear();
     return new_box;
 }
-void Match::Run(const cv::Mat &image) {
+void Match::Run(const cv::Mat &image, int draw_pre_box = 0) {
     // AdjustNumber my_adjust(allinformations);
     // allinformations = my_adjust.AdjustDynamic();
-    ImageTrackle my_trackle(allinformations.lower_thresold, allinformations.up_thresold);
+    ImageTrackle my_trackle(allinformations);
     cv::Mat result = my_trackle.ImageTrackleHSV(image);
     cv::imshow("二值化图", result);  
     MatchRBox(result);
-    cv::Mat resulut_cricle = my_trackle.ImageTrackleCricle(result, now_image.rel_box, allinformations.in_r, allinformations.out_r);
+    cv::Mat resulut_cricle = my_trackle.ImageTrackleCricle(result, now_image.rel_box);
     MatchBoarding(resulut_cricle);
     cv::Point2f points[4];
     now_image.rel_box.box_rect.points(points);
@@ -166,16 +167,17 @@ void Match::Run(const cv::Mat &image) {
             cv::line(image, points_bbox[i], points_bbox[(i + 1) % 4], cv::Scalar(0, 255, 0), 2);
         }
     }
-    //绘制备选框
-    // cv::Point2f points_pre_box[4];
-    // for (auto &box : last_image.pre_ch_box) {
-    //     box.rect.points(points_pre_box);
-    //     for (int i = 0; i < 4; i++) {   
-    //         cv::line(image, points_pre_box[i], points_pre_box[(i + 1) % 4], cv::Scalar(0, 0, 255), 2);
-    //     }
-    // }
+    if (draw_pre_box) {
+        cv::Point2f points_pre_box[4];
+        for (auto &box : last_image.pre_ch_box) {
+            box.rect.points(points_pre_box);
+            for (int i = 0; i < 4; i++) {   
+                cv::line(image, points_pre_box[i], points_pre_box[(i + 1) % 4], cv::Scalar(0, 0, 255), 2);
+            }
+        }
+    }
     cv::imshow("二值化图被圆形处理", resulut_cricle);  
     cv::imshow("原图", image);
-    cv::waitKey(0);
+    cv::waitKey(1);
     now_image = ImageInformation(); // 清除当前帧
 }

@@ -6,10 +6,10 @@ struct AllInformation
     /* data */
     cv::Scalar up_thresold;
     cv::Scalar lower_thresold;
-    float max_area_rbox;
+    int max_area_rbox;
     int in_r;
     int out_r;
-    float iou_thresold;
+    int iou_thresold;
 };
 
 enum DetectColor {
@@ -19,9 +19,10 @@ enum DetectColor {
 class AdjustNumber {
 public:
     AdjustNumber(const AllInformation &information);
-    void AdjustDynamic(const cv::Mat image);
+    void AdjustDynamic(cv::Mat &image);
     AllInformation ReInformation();
     // void ChangeHl(int number, void *);
+    // cv::Mat DrawPreImg(const cv::Mat &image);
 public:
     AllInformation informations;
     int h_l;
@@ -55,12 +56,15 @@ public:
 
 class ImageTrackle {
 public:
-    ImageTrackle(const cv::Scalar &lower, const cv::Scalar &up);
-    cv::Mat ImageTrackleCricle(const cv::Mat &image, const RBox &box, const float &in_r, const float &out_r);
+    ImageTrackle(const AllInformation &information);
+    cv::Mat ImageTrackleCricle(const cv::Mat &image, const RBox &box);
     cv::Mat ImageTrackleHSV(const cv::Mat &image);   
 public:
+    AllInformation trackle_information;
     cv::Scalar up_thresold;
     cv::Scalar lower_thresold;
+    float in_r;
+    float out_r;
 };
 class ImageInformation {
 public:
@@ -76,7 +80,7 @@ public:
 class Match {
 public:
     Match(const AllInformation &allinformation);
-    void Run(const cv::Mat &image);
+    void Run(const cv::Mat &image, int draw_pre_box);
     void MatchRBox(const cv::Mat &image);
     void MatchBoarding(const cv::Mat &image);
     float ComputeIou(const RBox &rect_one, const RBox &rect_two);
