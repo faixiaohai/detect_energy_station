@@ -1,8 +1,9 @@
 #include <detect.h>
+Match::Match() {
 
-Match::Match(const AllInformation &allinformation) {
-    allinformations = allinformation;
 }
+/// @brief 对输入的图像进行寻找轮廓，框选轮廓，和上一帧的R框进行iou操作从而选定当前帧的R框，如果上一帧并没有R框，则计算所有轮廓到图像中心的距离，距离最短的为R框;
+/// @param image 经过hsv二值化处理的图像 
 void Match::MatchRBox(const cv::Mat &image) {
     std::vector<std::vector<cv::Point>> contours; // 存放临时轮廓的vector向量
     std::vector<cv::Vec4i> hierarchy;
@@ -10,7 +11,7 @@ void Match::MatchRBox(const cv::Mat &image) {
     now_image.contours = contours;
     cv::RotatedRect rotated_rect;
     for (auto &contour : contours ) {
-        if (cv::contourArea(contour) > allinformations.max_area_rbox) {
+        if (cv::contourArea(contour) > RBOX_MAX_AREAM) {
             continue;
         }
         rotated_rect = cv::minAreaRect(contour);
@@ -33,7 +34,6 @@ void Match::MatchRBox(const cv::Mat &image) {
         image_center.x = image.size().width / 2;
         image_center.y = image.size().height / 2;
         std::cout << "image center = " << image_center << std::endl;
-        std:    // std::cout << my_adjust.informations.in_r << std::endl;:cout << "dont founded rbox in last image,please move video" << std::endl;
         std::vector<float> distances;
         for (int i = 0; i < now_image.pre_rbox.size(); i++) {
             float distance = std::sqrt(abs(image_center.x - now_image.pre_rbox[i].center.x) * abs(image_center.x - now_image.pre_rbox[i].center.x) + abs(image_center.y -now_image.pre_rbox[i].center.y) * abs(image_center.y -now_image.pre_rbox[i].center.y));
@@ -48,6 +48,11 @@ void Match::MatchRBox(const cv::Mat &image) {
     }
     iou_arry.clear();
 }
+
+/// @brief 计算iou值的函数
+/// @param rect_one 第一个框
+/// @param rect_two 第二个框
+/// @return iou值
 float Match::ComputeIou(const RBox &rect_one, const RBox &rect_two) {
     // 计算交集部分
     int x1 = std::max(rect_one.center.x, rect_two.center.x);
@@ -82,6 +87,12 @@ float Match::ComputeIou(const BoardBox &rect_one, const BoardBox &rect_two) {
     float iou = static_cast<float>(intersection_area) / union_area;
     return iou;
 }
+
+/// @brief 用当前帧识别到的待打机框和上一帧的备选框进行iou操作，从而确定当前帧的待打击框，
+///        如果上一帧没有待打击框，计算各个框到R框的距离,根据内圆覆盖流水灯和能量机关的特
+///        殊性，离着R框最近的框必定是待打击框,在选取当前帧的打击框后，将选定框绕R框旋转，
+///        从而生成当前帧的备选框。
+/// @param image 经过hsv二值化处理和内外圆分割处理的图像
 void Match::MatchBoarding(const cv::Mat &image) {
     std::vector<std::vector<cv::Point>> contours; // 存放临时轮廓的vector向量
     std::vector<cv::Vec4i> hierarchy;
@@ -95,7 +106,7 @@ void Match::MatchBoarding(const cv::Mat &image) {
         for (auto &boardbox : now_image.pre_box) {
             for (auto &last_rel_box : last_image.pre_ch_box) {
                 float iou = ComputeIou(boardbox, last_rel_box);
-                if (iou > allinformations.iou_thresold) {
+                if (iou > IOU_THRESOLD) {
                     now_image.rel_bbox.push_back(boardbox);
                 }
             }
@@ -130,6 +141,11 @@ void Match::MatchBoarding(const cv::Mat &image) {
     }
     last_image = now_image;    
 } 
+/// @brief 用于生成备选框
+/// @param roate_center 旋转中心 
+/// @param rotated_angle  旋转角度
+/// @param rect 用于生成备选框的矩形
+/// @return 生成的备选框
 BoardBox Match::GetPrepareBox(const cv::Point2f &roate_center, const float &rotated_angle, const BoardBox &rect) {
     cv::Mat rot = cv::getRotationMatrix2D(roate_center, rotated_angle, 1.0);
     cv::Point2f point[4];
@@ -145,10 +161,14 @@ BoardBox Match::GetPrepareBox(const cv::Point2f &roate_center, const float &rota
     vertices.clear();
     return new_box;
 }
-void Match::Run(const cv::Mat &image, int draw_pre_box = 0) {
+
+/// @brief 用于识别能量机关的集成函数
+/// @param image 原图像
+/// @param type 是否绘制备选框
+void Match::Run(const cv::Mat &image, std::string type) {
     // AdjustNumber my_adjust(allinformations);
     // allinformations = my_adjust.AdjustDynamic();
-    ImageTrackle my_trackle(allinformations);
+    ImageTrackle my_trackle;
     cv::Mat result = my_trackle.ImageTrackleHSV(image);
     cv::imshow("二值化图", result);  
     MatchRBox(result);
@@ -167,7 +187,7 @@ void Match::Run(const cv::Mat &image, int draw_pre_box = 0) {
             cv::line(image, points_bbox[i], points_bbox[(i + 1) % 4], cv::Scalar(0, 255, 0), 2);
         }
     }
-    if (draw_pre_box) {
+    if (type == "Yes") {
         cv::Point2f points_pre_box[4];
         for (auto &box : last_image.pre_ch_box) {
             box.rect.points(points_pre_box);

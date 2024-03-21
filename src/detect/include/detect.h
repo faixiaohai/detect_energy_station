@@ -1,38 +1,37 @@
 #include <iostream>
 #include <opencv2/opencv.hpp>
-
-struct AllInformation
-{
-    /* data */
-    cv::Scalar up_thresold;
-    cv::Scalar lower_thresold;
-    int max_area_rbox;
-    int in_r;
-    int out_r;
-    int iou_thresold;
-};
-
-enum DetectColor {
-    BLUE,
-    RED
-};
-class AdjustNumber {
-public:
-    AdjustNumber(const AllInformation &information);
-    void AdjustDynamic(cv::Mat &image);
-    AllInformation ReInformation();
-    // void ChangeHl(int number, void *);
-    // cv::Mat DrawPreImg(const cv::Mat &image);
-public:
-    AllInformation informations;
+#define PATH "../../file/1.mp4"
+#define RBOX_MAX_AREAM  2000
+#define IOU_THRESOLD  0.5
+/// @brief  用bar动态调节的数值
+struct BarInformation
+{   
     int h_l;
     int s_l;
     int v_l;
     int h_up;
     int s_up;
     int v_up;
+    int in_r;
+    int out_r;
 };
 
+/// @brief 识别的颜色
+enum DetectColor {
+    BLUE,
+    RED
+};
+
+/// @brief 生成bar界面
+class AdjustNumber {
+public:
+    AdjustNumber();
+    static void AdjustDynamic(cv::Mat &image);
+public:
+    static BarInformation barinformation;
+};
+
+/// @brief R框
 class RBox {
 public:
     RBox();
@@ -43,6 +42,8 @@ public:
     float height;
     float width;
 };
+
+/// @brief 待击打框
 class BoardBox {
 public:
     BoardBox();
@@ -54,21 +55,23 @@ public:
     float width;
 };
 
+/// @brief 图像处理
 class ImageTrackle {
 public:
-    ImageTrackle(const AllInformation &information);
+    ImageTrackle();
     cv::Mat ImageTrackleCricle(const cv::Mat &image, const RBox &box);
     cv::Mat ImageTrackleHSV(const cv::Mat &image);   
 public:
-    AllInformation trackle_information;
     cv::Scalar up_thresold;
     cv::Scalar lower_thresold;
-    float in_r;
-    float out_r;
+    int in_r;
+    int out_r;
 };
+
+/// @brief 图像的一系列信息
 class ImageInformation {
 public:
-    ImageInformation();
+    ImageInformation() {};
 public:
     std::vector<RBox> pre_rbox; 
     RBox rel_box;
@@ -77,18 +80,19 @@ public:
     std::vector<BoardBox> rel_bbox;
     std::vector<BoardBox> pre_ch_box;
 };
+
+/// @brief 匹配待打击框
 class Match {
 public:
-    Match(const AllInformation &allinformation);
-    void Run(const cv::Mat &image, int draw_pre_box);
+    Match();
+    void Run(const cv::Mat &image, std::string type = "No");
     void MatchRBox(const cv::Mat &image);
     void MatchBoarding(const cv::Mat &image);
     float ComputeIou(const RBox &rect_one, const RBox &rect_two);
     float ComputeIou(const BoardBox &rect_one, const BoardBox &rect_two);
     BoardBox GetPrepareBox(const cv::Point2f &rotate_center, const float &rotated_angel, const BoardBox &rotated_rect);
 public:
-    AllInformation allinformations;
-    ImageInformation now_image;
-    ImageInformation last_image;
+    ImageInformation now_image;  //当前帧
+    ImageInformation last_image; // 上一帧
 };
 
