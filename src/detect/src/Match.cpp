@@ -1,7 +1,15 @@
+/*
+ * @Author: myq 2127800097@qq.com
+ * @Date: 2024-03-16 11:07:18
+ * @LastEditors: myq 2127800097@qq.com
+ * @LastEditTime: 2024-03-21 19:52:00
+ * @FilePath: /eigen_other/src/detect/src/Match.cpp
+ * @Description: 用于待打击框选取的一系列函数
+ * 
+ * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved. 
+ */
 #include <detect.h>
-Match::Match() {
-
-}
+Match::Match() {}
 /// @brief 对输入的图像进行寻找轮廓，框选轮廓，和上一帧的R框进行iou操作从而选定当前帧的R框，如果上一帧并没有R框，则计算所有轮廓到图像中心的距离，距离最短的为R框;
 /// @param image 经过hsv二值化处理的图像 
 void Match::MatchRBox(const cv::Mat &image) {
