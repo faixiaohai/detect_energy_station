@@ -2,7 +2,7 @@
  * @Author: myq 2127800097@qq.com
  * @Date: 2024-03-17 09:51:21
  * @LastEditors: myq 2127800097@qq.com
- * @LastEditTime: 2024-03-29 21:18:39
+ * @LastEditTime: 2024-03-30 10:52:20
  * @FilePath: /eigen_other/src/detect/src/AdjustNumber.cpp
  * @Description: 此文件函数用于对图像进行动态调节参数预处理，从而得到一个稳定的参数进行后面的识别
  * 
@@ -51,12 +51,16 @@ void ChangeInr(int number, void *userdata) {
 void ChangeOutr(int number, void *userdata) {
     cv::Mat* image = static_cast<cv::Mat*>(userdata);
     std::cout << "adjust_inr" << std::endl;
-    ChangeCricle(*image);
+    ChangeCricle(*image); 
 }
 void ChangeTimes(int number, void *userdata) {
     cv::Mat* image = static_cast<cv::Mat*>(userdata);
     std::cout << "adjust_inr" << std::endl;
     ChangeCricle(*image);
+}
+void ChangeBboxMaxArea(int number, void *userdata) {
+}
+void ChangeBboxMinArea(int number, void *userdata) {
 }
 
 /// @brief 用于生成调节hsv上下阈值的bar
@@ -73,6 +77,8 @@ void AdjustNumber::AdjustDynamic(cv::Mat &image) {
     cv::createTrackbar("in_r", "self_defined", &barinformation.in_r, 250, ChangeInr,&image);
     cv::createTrackbar("out_r", "self_defined", &barinformation.out_r, 500,ChangeOutr,&image);
     cv::createTrackbar("er_times", "self_defined", &barinformation.er_times, 30, ChangeTimes,&image);
+    cv::createTrackbar("max_box_area", "self_defined", &barinformation.max_bbox_area, 60000,ChangeBboxMaxArea);
+    cv::createTrackbar("min_box_area", "self_defined", &barinformation.min_bbox_area, 10000,ChangeBboxMinArea);
 }
 /// @brief 用于对图像进行hsv处理
 /// @param image 原图像

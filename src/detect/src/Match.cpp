@@ -2,7 +2,7 @@
  * @Author: myq 2127800097@qq.com
  * @Date: 2024-03-16 11:07:18
  * @LastEditors: myq 2127800097@qq.com
- * @LastEditTime: 2024-03-30 09:58:20
+ * @LastEditTime: 2024-03-30 10:36:13
  * @FilePath: /eigen_other/src/detect/src/Match.cpp
  * @Description: 用于待打击框选取的一系列函数
  * 
@@ -109,14 +109,14 @@ float Match::ComputeIou(const BoardBox &rect_one, const BoardBox &rect_two) {
 ///        从而生成当前帧的备选框。
 /// @param image 经过hsv二值化处理和内外圆分割处理的图像
 void Match::MatchBoarding(const cv::Mat &image) {
-    if (last_image.rel_bbox.size() == 5) {
-        std::cout << "motivate successfully" << std::endl;      
-    }
     std::vector<std::vector<cv::Point>> contours; // 存放临时轮廓的vector向量
     std::vector<cv::Vec4i> hierarchy;
     cv::findContours(image, contours, hierarchy, 0, 2);
     for (auto &contour : contours) {
-        if (cv::contourArea(contour) < MIN_BBOX_AREA) {
+        if (cv::contourArea(contour) < AdjustNumber::barinformation.min_bbox_area) {
+            continue;
+        }
+        if (cv::contourArea(contour) > AdjustNumber::barinformation.max_bbox_area) {
             continue;
         }
         cv::RotatedRect rect = cv::minAreaRect(contour);

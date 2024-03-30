@@ -2,7 +2,7 @@
  * @Author: myq 2127800097@qq.com
  * @Date: 2024-03-16 11:06:56
  * @LastEditors: myq 2127800097@qq.com
- * @LastEditTime: 2024-03-30 09:51:51
+ * @LastEditTime: 2024-03-30 10:53:48
  * @FilePath: /eigen_other/src/detect/include/detect.h
  * @Description: 
  * 
@@ -10,7 +10,7 @@
  */
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#define PATH "../../file/5.mp4"
+#define PATH "../../file/2.mp4"
 #define RBOX_MAX_AREAM 1000
 #define IOU_THRESOLD  0.3
 #define RBOX_MIN_AREA 100
@@ -28,6 +28,8 @@ struct BarInformation
     int in_r;
     int out_r;
     int er_times;
+    int max_bbox_area;
+    int min_bbox_area;
 };
 
 /// @brief 识别的颜色

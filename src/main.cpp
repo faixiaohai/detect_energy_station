@@ -2,7 +2,7 @@
  * @Author: myq 2127800097@qq.com
  * @Date: 2024-03-16 11:05:45
  * @LastEditors: myq 2127800097@qq.com
- * @LastEditTime: 2024-03-30 09:42:22
+ * @LastEditTime: 2024-03-30 10:30:10
  * @FilePath: /eigen_other/src/main.cpp
  * @Description:  
  * 
@@ -35,6 +35,6 @@ int main()
             std::cout << "读取失败" << std::endl;
             break;
         }
-        my_match.Run(frame, "No", "draw_sloted"); // run集成运行函数 No不绘制备选库,Yes绘制备选框
+        my_match.Run(frame, "No", "draw_sloted"); // run集成运行函数 
     }
 }
