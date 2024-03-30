@@ -1,8 +1,21 @@
+/*
+ * @Author: myq 2127800097@qq.com
+ * @Date: 2024-03-16 11:06:56
+ * @LastEditors: myq 2127800097@qq.com
+ * @LastEditTime: 2024-03-30 09:51:51
+ * @FilePath: /eigen_other/src/detect/include/detect.h
+ * @Description: 
+ * 
+ * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved. 
+ */
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#define PATH "../../file/1.mp4"
-#define RBOX_MAX_AREAM  2000
-#define IOU_THRESOLD  0.5
+#define PATH "../../file/5.mp4"
+#define RBOX_MAX_AREAM 1000
+#define IOU_THRESOLD  0.3
+#define RBOX_MIN_AREA 100
+#define RBOX_SUB_CENTER 500
+#define MIN_BBOX_AREA 9000
 /// @brief  用bar动态调节的数值
 struct BarInformation
 {   
@@ -14,12 +27,19 @@ struct BarInformation
     int v_up;
     int in_r;
     int out_r;
+    int er_times;
 };
 
 /// @brief 识别的颜色
 enum DetectColor {
     BLUE,
     RED
+};
+
+enum ConditionType {
+    SLOTED,
+    SLOT,
+    NOLIGHT
 };
 
 /// @brief 生成bar界面
@@ -47,12 +67,17 @@ public:
 class BoardBox {
 public:
     BoardBox();
-    BoardBox(const cv::RotatedRect &rrect);
+    BoardBox(const cv::RotatedRect &rrect, const int &number, const ConditionType &type, const std::vector<cv::Point> &contour);
+    void ChangeId(const int &number);
+    void ChangeCondition(const ConditionType &type);
 public:
     cv::RotatedRect rect;
     cv::Point2f center;
     float height;
     float width;
+    int id;
+    ConditionType type_condition;
+    std::vector<cv::Point> contours;
 };
 
 /// @brief 图像处理
@@ -74,18 +99,20 @@ public:
     ImageInformation() {};
 public:
     std::vector<RBox> pre_rbox; 
-    RBox rel_box;
+    RBox rel_rbox;
     std::vector<std::vector<cv::Point>> contours;
-    std::vector<BoardBox> pre_box;
+    std::vector<BoardBox> pre_bbox;
     std::vector<BoardBox> rel_bbox;
     std::vector<BoardBox> pre_ch_box;
+    std::vector<BoardBox> sloted_box;
+    std::vector<BoardBox> wait_slot_box;
 };
 
 /// @brief 匹配待打击框
 class Match {
 public:
     Match();
-    void Run(const cv::Mat &image, std::string type = "No");
+    void Run(const cv::Mat &image, std::string type = "No", std::string type_other = "No");
     void MatchRBox(const cv::Mat &image);
     void MatchBoarding(const cv::Mat &image);
     float ComputeIou(const RBox &rect_one, const RBox &rect_two);

@@ -2,7 +2,7 @@
  * @Author: myq 2127800097@qq.com
  * @Date: 2024-03-17 09:51:21
  * @LastEditors: myq 2127800097@qq.com
- * @LastEditTime: 2024-03-21 19:22:36
+ * @LastEditTime: 2024-03-29 21:18:39
  * @FilePath: /eigen_other/src/detect/src/AdjustNumber.cpp
  * @Description: 此文件函数用于对图像进行动态调节参数预处理，从而得到一个稳定的参数进行后面的识别
  * 
@@ -53,6 +53,11 @@ void ChangeOutr(int number, void *userdata) {
     std::cout << "adjust_inr" << std::endl;
     ChangeCricle(*image);
 }
+void ChangeTimes(int number, void *userdata) {
+    cv::Mat* image = static_cast<cv::Mat*>(userdata);
+    std::cout << "adjust_inr" << std::endl;
+    ChangeCricle(*image);
+}
 
 /// @brief 用于生成调节hsv上下阈值的bar
 /// @param image 原图像
@@ -67,6 +72,7 @@ void AdjustNumber::AdjustDynamic(cv::Mat &image) {
     cv::createTrackbar("v_up", "self_defined", &barinformation.v_up, 255, ChangeVup,&image);
     cv::createTrackbar("in_r", "self_defined", &barinformation.in_r, 250, ChangeInr,&image);
     cv::createTrackbar("out_r", "self_defined", &barinformation.out_r, 500,ChangeOutr,&image);
+    cv::createTrackbar("er_times", "self_defined", &barinformation.er_times, 30, ChangeTimes,&image);
 }
 /// @brief 用于对图像进行hsv处理
 /// @param image 原图像
@@ -89,9 +95,23 @@ cv::Mat ChangeCricle(const cv::Mat &image) {
     Match my_match;
     result_img = my_trackle.ImageTrackleHSV(image);
     my_match.MatchRBox(result_img);
-    std::cout << "rbox" << my_match.now_image.rel_box.center << std::endl;
-    result_img = my_trackle.ImageTrackleCricle(result_img, my_match.now_image.rel_box);
+    std::cout << "rbox" << my_match.now_image.rel_rbox.center << std::endl;
+    result_img = my_trackle.ImageTrackleCricle(result_img, my_match.now_image.rel_rbox);
+    cv::circle(result_img, my_match.now_image.rel_rbox.center, AdjustNumber::barinformation.out_r, cv::Scalar(255, 0, 0), 1, 1, 0);
     imshow("预调_cricle", result_img);
     cv::waitKey(100);
-    return result_img;
+    return result_img;   
+}
+cv::Mat ErImage(const cv::Mat &image) {
+    cv::Mat result_img;
+    ImageTrackle my_trackle;
+    Match my_match;
+    result_img = my_trackle.ImageTrackleHSV(image);
+    my_match.MatchRBox(result_img);
+    std::cout << "rbox" << my_match.now_image.rel_rbox.center << std::endl;
+    result_img = my_trackle.ImageTrackleCricle(result_img, my_match.now_image.rel_rbox);
+    cv::circle(result_img, my_match.now_image.rel_rbox.center, AdjustNumber::barinformation.out_r, cv::Scalar(255, 0, 0), 1, 1, 0);
+    imshow("预调_er", result_img);
+    cv::waitKey(100);
+    return result_img;   
 }
