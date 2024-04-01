@@ -2,7 +2,7 @@
  * @Author: myq 2127800097@qq.com
  * @Date: 2024-03-16 11:07:18
  * @LastEditors: myq 2127800097@qq.com
- * @LastEditTime: 2024-03-29 21:53:24
+ * @LastEditTime: 2024-03-31 16:58:52
  * @FilePath: /eigen_other/src/detect/src/ImageTrackle.cpp
  * @Description: 对图片进行hsv和内外圆分割处理的函数
  * 
@@ -26,9 +26,8 @@ cv::Mat ImageTrackle::ImageTrackleHSV(const cv::Mat &image) {
     cv::Mat output_image, hsv_image;
     cv::cvtColor(image,hsv_image, cv::COLOR_BGR2HSV);   
     cv::inRange(hsv_image, lower_thresold, up_thresold, output_image);
-    cv::Mat kernel_b = cv::getStructuringElement(0,cv::Size(2, 2));
     cv::Mat kernel_a = cv::getStructuringElement(0,cv::Size(2, 2));
-    cv::morphologyEx(output_image, output_image, 1, kernel_a, cv::Point(-1, -1), 5 );
+    cv::morphologyEx(output_image, output_image, 1, kernel_a, cv::Point(-1, -1), 2 );
     return output_image;
 } 
 /// @brief 以当前帧的的R框为中心画圆，内圆用于覆盖掉流水灯，外园用于防止能量机关的待击打框被污染
@@ -39,7 +38,6 @@ cv::Mat ImageTrackle::ImageTrackleCricle(const cv::Mat &image, const RBox &box) 
     cv::Mat out_img;
     cv::circle(image, box.center, in_r, cv::Scalar(0, 0, 0), -1);
     cv::circle(image, box.center, out_r, cv::Scalar(0, 0, 0), 1, 1, 0);
-
     cv::Mat kernel_a = cv::getStructuringElement(0,cv::Size(3, 3));
     cv::morphologyEx(image, image, 1, kernel_a, cv::Point(-1, -1), AdjustNumber::barinformation.er_times );
     return image;

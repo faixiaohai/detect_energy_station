@@ -2,20 +2,20 @@
  * @Author: myq 2127800097@qq.com
  * @Date: 2024-03-16 11:06:56
  * @LastEditors: myq 2127800097@qq.com
- * @LastEditTime: 2024-03-30 10:53:48
+ * @LastEditTime: 2024-04-01 15:53:37
  * @FilePath: /eigen_other/src/detect/include/detect.h
  * @Description: 
  * 
  * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved. 
  */
+#include <kit.h>
 #include <iostream>
 #include <opencv2/opencv.hpp>
-#define PATH "../../file/2.mp4"
-#define RBOX_MAX_AREAM 1000
-#define IOU_THRESOLD  0.3
-#define RBOX_MIN_AREA 100
-#define RBOX_SUB_CENTER 500
-#define MIN_BBOX_AREA 9000
+#define PATH "../../file/6.mp4"
+#define RBOX_MAX_AREAM 3000
+#define IOU_THRESOLD  0.1
+#define RBOX_MIN_AREA 50
+#define RBOX_SUB_CENTER 800
 /// @brief  用bar动态调节的数值
 struct BarInformation
 {   
@@ -31,7 +31,10 @@ struct BarInformation
     int max_bbox_area;
     int min_bbox_area;
 };
-
+enum ImageType {
+    MOTIVE,
+    MOTIVED
+};
 /// @brief 识别的颜色
 enum DetectColor {
     BLUE,
@@ -114,14 +117,13 @@ public:
 class Match {
 public:
     Match();
+    void MatchRBoxReL(const cv::Mat &image);
     void Run(const cv::Mat &image, std::string type = "No", std::string type_other = "No");
     void MatchRBox(const cv::Mat &image);
     void MatchBoarding(const cv::Mat &image);
-    float ComputeIou(const RBox &rect_one, const RBox &rect_two);
-    float ComputeIou(const BoardBox &rect_one, const BoardBox &rect_two);
     BoardBox GetPrepareBox(const cv::Point2f &rotate_center, const float &rotated_angel, const BoardBox &rotated_rect);
 public:
     ImageInformation now_image;  //当前帧
     ImageInformation last_image; // 上一帧
+    ImageType image_type;
 };
-

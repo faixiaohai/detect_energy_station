@@ -1,1 +1,1 @@
-cd build && rm -rf * && cmake .. && make && cd src && ./run
+cd build && cmake .. && make && cd src && ./run
