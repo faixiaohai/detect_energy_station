@@ -82,7 +82,7 @@ int main()
             std::cout << pre_matrix(0);
             std::cout << pre_matrix(1);
             if (pre_matrix(1) != 0 && pre_matrix(0) != 0) {
-                cv::Point2f point = slove_pnp.AnalysisDataCameraTo2D(pre_matrix, rvec, tvec);
+                cv::Point2f point = slove_pnp.AnalysisDataCameraTo2D(pre_matrix);
                 cv::circle(frame, point, 10, cv::Scalar(0, 255, 0), 1, 8, 0);
                 int i = 1;
                 for (const auto &point : corrected_points) {

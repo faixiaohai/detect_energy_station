@@ -6,7 +6,6 @@
 #include <opencv2/opencv.hpp>
 #include <eigen3/Eigen/Dense>
 
-#include <detect.h>
 
 enum BuffRotateMode {CLOCKWISE, ANTICLOCKWISE};
 
@@ -17,6 +16,7 @@ class BuffKalmanFilter
     static constexpr float w = 60;
 public:
     BuffKalmanFilter(const std::vector<cv::Point3f> &points , const float &d_time);
+
 
     void InitFilter();
 

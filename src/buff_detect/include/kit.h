@@ -16,7 +16,7 @@
 #include <opencv2/opencv.hpp>
 
 namespace Kit
-{
+{  
     float ComputeDistance(const cv::Point2f &pt1, const cv::Point2f &pt2);
     cv::RotatedRect SelectRoatedRect(const cv::Mat &image);
     float ComputeIou(const cv::RotatedRect &rect_one, const cv::RotatedRect &rect_two);

@@ -8,7 +8,9 @@
  * 
  * Copyright (c) 2024 by ${git_name_email}, All Rights Reserved. 
  */
+
 #include <detect.h>
+
 ImageTrackle::ImageTrackle() {
     up_thresold = cv::Scalar(AdjustNumber::barinformation.h_up,
                              AdjustNumber::barinformation.s_up,

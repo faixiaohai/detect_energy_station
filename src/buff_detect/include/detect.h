@@ -13,10 +13,10 @@
  */
 #include <iostream>
 
-
 #include <opencv2/opencv.hpp>
 
 #include <kit.h>
+
 
 
 #define PATH "/home/mayuqi/Desktop/detect_buff/file/5.mp4"
@@ -27,6 +27,7 @@
 /// @brief  用bar动态调节的数值
 struct BarInformation
 {   
+    
     // int h_l = 0;
     // int s_l = 175;
     // int v_l = 137;

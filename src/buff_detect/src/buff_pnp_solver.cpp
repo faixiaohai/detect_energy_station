@@ -7,7 +7,7 @@
 #include <opencv2/core.hpp>
 
 
-namespace armor_auto_aim {
+namespace buff_auto_aim {
 BuffPnP::BuffPnP(const std::array<double, 9>& intrinsic_matrix,
                 const std::vector<double>& distortion_vector)
                 : m_intrinsic_matrix(cv::Mat(3, 3, CV_64F, const_cast<double*>(intrinsic_matrix.data())).clone()),
@@ -142,7 +142,7 @@ std::vector<cv::Point2f> BuffPnP::PointOrderCorrect(const std::vector<cv::Point2
     return points_corrected;
 }
 
-cv::Point2f BuffPnP::AnalysisDataCameraTo2D(const Eigen::MatrixXd &matrix, const cv::Mat &rvec, const cv::Mat &tvec) {
+cv::Point2f BuffPnP::AnalysisDataCameraTo2D(const Eigen::MatrixXd &matrix) {
     std::vector<cv::Point3f> points;
     cv::Point3f point = cv::Point3f(matrix(0), matrix(1), matrix(2));
     points.push_back(point);
